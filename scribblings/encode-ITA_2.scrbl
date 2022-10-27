@@ -30,8 +30,10 @@ codes indicate which bank of characters are being addressed.
 
   @itemlist[
     @item{@racket[#\null]}
-    @item{Any of @racket{ABCDEFGHIJKLMNOPQRSTUVWXYZ} (standard English
-                                                               alphabet)}
+    @item{
+      Any of @racket{ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+      (standard English alphabet, uppercase only)
+    }
     @item{@racket[#\linefeed]}
     @item{@racket[#\return]}
     @item{Any of @racket{0123456789} (standard decimal number set)}
