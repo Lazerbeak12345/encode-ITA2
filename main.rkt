@@ -22,7 +22,7 @@
                   [(#\U) '(LETTERS .    #x07)] [(#\7) '(FIGURES . #x07)]
 
                   [(#\return)    '(() . #x08)]
-                  [(#\D) '(LETTERS .    #x09)] ;[(#\enq)'(FIGURES #x09)]???
+                  [(#\D) '(LETTERS .    #x09)] [(#\u05)'(FIGURES . #x09)] ; Enquiry
                   [(#\R) '(LETTERS .    #x0A)] [(#\4)  '(FIGURES . #x0A)]
                   [(#\J) '(LETTERS .    #x0B)] [(#\u07)'(FIGURES . #x0B)] ; bell
                   [(#\N) '(LETTERS .    #x0C)] [(#\,)  '(FIGURES . #x0C)]
