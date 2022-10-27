@@ -8,7 +8,7 @@
 
 @margin-note{
   Be aware if you site this that I used Wikipedia as my source 😅.
-  (The only thing I sourced was the table from charcters to values)
+  (The only thing I sourced was the table from characters to values)
 }
 
 Encodes strings in the 5 bit ITA2 character encoding.

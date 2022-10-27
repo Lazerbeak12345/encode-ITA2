@@ -10,8 +10,7 @@
                    ([char str])
               (define vals : (Pair L/F Exact-Nonnegative-Integer)
                 (case char
-                  ; My source for this was Wikipedia. (The only thing I sourced
-                  ; was the table from charcters to values)
+                  ; My source for this was Wikipedia. (The only thing I sourced was the table from characters to values)
                   [(#\null)      '(() . #x00)]
                   [(#\E) '(LETTERS .    #x01)] [(#\3) '(FIGURES . #x01)]
                   [(#\linefeed)  '(() . #x02)]
