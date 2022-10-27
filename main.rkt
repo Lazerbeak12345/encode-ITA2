@@ -1,17 +1,17 @@
 #lang typed/racket/base
 (module+ test (require typed/rackunit))
-(provide encode-ITA_2)
-(: encode-ITA_2 (String . -> . (Listof Exact-Nonnegative-Integer)))
+(provide encode-ITA_2 string->ita_2)
+(: string->ita_2 (String . -> . (Listof Exact-Nonnegative-Integer)))
 (define-type L/F (U Null 'LETTERS 'FIGURES))
-(define (encode-ITA_2 str)
+(define (string->ita_2 str)
   (define mode : (U L/F Void) (void))
   (apply append
          (for/list : (Listof (Listof Exact-Nonnegative-Integer))
                    ([char str])
               (define vals : (Pair L/F Exact-Nonnegative-Integer)
                 (case char
-                  ; My source for this was Wikipedia. Don't cite this document
-                  ; if you value historical accuracy.
+                  ; My source for this was Wikipedia. (The only thing I sourced
+                  ; was the table from charcters to values)
                   [(#\null)      '(() . #x00)]
                   [(#\E) '(LETTERS .    #x01)] [(#\3) '(FIGURES . #x01)]
                   [(#\linefeed)  '(() . #x02)]
@@ -42,25 +42,28 @@
                   [(#\O) '(LETTERS .    #x18)] [(#\9) '(FIGURES . #x18)]
                   [(#\B) '(LETTERS .    #x19)] [(#\?) '(FIGURES . #x19)]
                   [(#\G) '(LETTERS .    #x1A)] [(#\&) '(FIGURES . #x1A)]
-                  ;figs-----------------1B--
+                  #|figs------------------1B|#
                   [(#\M) '(LETTERS .    #x1C)] [(#\.) '(FIGURES . #x1C)]
                   [(#\X) '(LETTERS .    #x1D)] [(#\/) '(FIGURES . #x1D)]
                   [(#\V) '(LETTERS .    #x1E)] [(#\;) '(FIGURES . #x1E)]
-                  ;ltrs----------------1F--
+                  ; Delete char is ltr in ltr mode
+                  [(#\u7F)'(LETTERS .   #x1F)] #|ltrs---------------1F|#
                   [else (raise-user-error "invalid ITA2 char" char)]))
               (define ltrsorfigs (car vals))
               (define num (cdr vals))
-              (cond [(null? ltrsorfigs)
+              (cond [(null? ltrsorfigs) ; Control char shared between ltrs and figs
                      (list num)]
-                    [(or (eq? ltrsorfigs mode)
+                    [(or (eq? ltrsorfigs mode) ; Don't duplicate the mode signal
                          (null? mode))
                      (list num)]
                     [else
                       (set! mode ltrsorfigs)
+                      ; Send the needed mode signal when switching
                       (list (if (eq? 'LETTERS mode)
                                 #x1F
                                 #x1B)
                             num)]))))
+(define encode-ITA_2 string->ita_2)
 (module+ test
          (test-equal? "test letter"
                       (encode-ITA_2 "A")
@@ -94,8 +97,36 @@
                       '(31 #x03 #x19 #x0E #x09 #x01 #x0D #x1A #x14 #x06 #x0B
                         #x0F #x12 #x1C #x0C #x18 #x16 #x17 #x0A #x05 #x10 #x07
                         #x1E #x13 #x1D #x15 #x11))
+         (test-equal? "test numbers"
+                      (encode-ITA_2 "0123456789")
+                      '(27 #x16 #x17 #x13 #x01 #x0A #x10 #x15 #x07 #x06 #x18))
+         (test-equal? "test random stuff"
+                      (encode-ITA_2 "-',!:(+)£?&./;")
+                      '(27 #x03 #x05 #x0C #x0D #x0E #x0F #x11 #x12 #x14 #x19
+                       #x1A #x1C #x1D #x1E))
          (test-equal? "hello world"
                       ; ITA2 only does uppercase
                       (encode-ITA_2 "HELLO, WORLD!")
                       '(31 #x14 #x01 #x12 #x12 #x18 27 #x0C #x04 31 #x13 #x18
-                        #x0A #x12 #x09 27 #x0D)))
+                        #x0A #x12 #x09 27 #x0D))
+         (test-equal? "del"
+                      (encode-ITA_2 "\u7F")
+                      '(31 31))
+         (test-equal? "bell"
+                      (encode-ITA_2 "\u07")
+                      '(27 11))
+         (test-equal? "space"
+                      (encode-ITA_2 " ")
+                      '(4))
+         (test-equal? "null"
+                      (encode-ITA_2 "\u0")
+                      '(0))
+         (test-equal? "linefeed"
+                      (encode-ITA_2 "\n")
+                      '(2))
+         (test-equal? "return"
+                      (encode-ITA_2 "\r")
+                      '(8))
+         (test-equal? "enq"
+                      (encode-ITA_2 "\u05")
+                      '(27 #x09)))
