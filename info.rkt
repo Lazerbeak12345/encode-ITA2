@@ -6,4 +6,4 @@
 (define pkg-desc "Encodes strings in the 5 bit ITA2 character encoding.")
 (define version "0.1.1")
 (define pkg-authors '(lazerbeak12345))
-(define license '(BSD 3-Clause "New" or "Revised" Licence))
+(define license '(BSD-3-Clause))
